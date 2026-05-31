@@ -72,12 +72,17 @@ export default buildModule("IQCTokenWithAllocations", (m) => {
     allocationContracts.push(allocation);
   }
 
+  // CRITICAL: Lock minting immediately as part of deployment.
+  // This eliminates the pre-lock mint window (a Critical finding in the audit).
+  // See Trust-Model.md for rationale.
+  m.call(token, "lockMintingForever", [], { id: "lock_minting" });
+
   return { 
     token, 
     allocationContracts,
     // Note: 
     // - 1% (10M IQC) stays with the deployer (immutableqc.base.eth) at genesis.
     // - 99% is distributed to the allocation contracts above.
-    // - After deployment, call token.lockMintingForever() to permanently lock the 1B supply.
+    // - Minting is locked atomically during this deployment.
   };
 });

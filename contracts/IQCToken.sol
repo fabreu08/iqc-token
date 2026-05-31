@@ -78,6 +78,11 @@ contract IQCToken is
         _mint(to, amount);
     }
 
+    /**
+     * @dev Permanently disables minting.
+     * @notice This is a one-way operation. It should ideally be called atomically
+     * with deployment to eliminate the pre-lock mint window (see Trust Model).
+     */
     function lockMintingForever() public onlyOwner {
         require(!mintingLocked, "Minting already locked");
         mintingLocked = true;
