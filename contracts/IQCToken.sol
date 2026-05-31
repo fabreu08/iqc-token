@@ -7,9 +7,14 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 /**
  * @title IQCToken
- * @dev Fixed supply token for Immutable Quality Control.
- * Total supply is minted at deployment. Owner can later renounce minting
- * to permanently lock the supply.
+ * @dev Fixed supply token for Immutable Quality Control (IQC).
+ *
+ * Features:
+ * - Fixed total supply minted at deployment (1 billion by default in deployment scripts).
+ * - Minting can be permanently disabled via `lockMintingForever()`.
+ * - Supports ERC1363 (`transferAndCall` / `transferFromAndCall` / `approveAndCall`).
+ *   This allows the token to carry arbitrary data payloads when transferred,
+ *   enabling powerful patterns like "pay + commit data" in a single transaction.
  */
 contract IQCToken is ERC20, ERC1363, Ownable {
     bool public mintingLocked;
@@ -28,7 +33,7 @@ contract IQCToken is ERC20, ERC1363, Ownable {
 
     /**
      * @dev Permanently disables the mint function. Can only be called once by owner.
-     * This is the mechanism to "lock the token supply".
+     * This locks the token supply forever.
      */
     function lockMintingForever() public onlyOwner {
         require(!mintingLocked, "Minting already locked");
