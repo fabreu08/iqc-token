@@ -2,6 +2,7 @@
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC1363.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 /**
@@ -10,7 +11,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
  * Total supply is minted at deployment. Owner can later renounce minting
  * to permanently lock the supply.
  */
-contract IQCToken is ERC20, Ownable {
+contract IQCToken is ERC20, ERC1363, Ownable {
     bool public mintingLocked;
 
     constructor(uint256 initialSupply) ERC20("Immutable Quality Control Token", "IQC") Ownable(msg.sender) {
