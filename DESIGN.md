@@ -64,4 +64,45 @@ The Registry (or a dedicated receiver contract) would implement `onTransferRecei
 
 ---
 
+## Advanced Tokenomics Enabled by Data-Carrying Tokens (ERC1363)
+
+Making the IQC token support `transferAndCall` with arbitrary data opens several powerful economic and product directions:
+
+### 1. **Atomic "Pay + Commit" for Instruments**
+Instruments (or their gateways) can submit data + pay the fee in one transaction. This is much more reliable for automated systems than multi-step approve + call flows.
+
+### 2. **Conditional / Smart Fees**
+The receiving contract can inspect the data payload and decide:
+- Accept the commit and burn the fee
+- Reject and return the tokens
+- Charge a variable fee based on data size, sensor type, or urgency
+
+### 3. **Future "Data Marketplace" Primitives**
+With data-carrying transfers, we can later build:
+- Paid data queries (someone sends IQC + a query hash, the oracle responds with data)
+- Premium / verified data streams (higher fee for stronger guarantees)
+- Batched commits with discounts
+
+### 4. **Better UX for End Users & Devices**
+A lab instrument could be configured to periodically do:
+```solidity
+token.transferAndCall(registry, fee, abi.encode(serial, readingHash, timestamp));
+```
+No need for the instrument to hold ETH for gas or manage approvals.
+
+### 5. **New Staking / Delegation Models**
+In the future we could allow:
+- Users to delegate stake to operators while still having their data commits carry their identity.
+- "Data bonds" where committing data requires locking tokens for a period (slashing risk).
+
+### Risks & Considerations
+- Reentrancy when implementing `onTransferReceived`
+- Need clear error handling when data payloads are invalid
+- Gas costs of decoding complex data on-chain
+- Backward compatibility with existing `commitQCPacket` flow
+
+This is why moving beyond a "dumb fee token" is strategically valuable for Immutable QC. The token becomes part of the data integrity layer itself, not just the payment rail.
+
+---
+
 This document will evolve as we refine the token's role in the Immutable QC system.
