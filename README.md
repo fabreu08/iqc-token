@@ -8,7 +8,7 @@ Official smart contracts for the **Immutable Quality Control (IQC)** token.
 
 ## Contracts
 
-- `IQCToken.sol` — ERC-20 token with fixed supply. Minting can be permanently locked.
+- `IQCToken.sol` — Full-featured ERC-20 with fixed 1B supply, ERC20Permit, ERC20Votes, ERC1363 (data payloads), ERC2771 meta-tx support, Multicall, batch transfers, totalBurned(), and Ownable2Step.
 - `TokenAllocation.sol` — Transparent on-chain escrow contracts that hold allocated portions of the supply. Each contract contains a public description of its purpose.
 
 ## Allocation Overview (1B Total)

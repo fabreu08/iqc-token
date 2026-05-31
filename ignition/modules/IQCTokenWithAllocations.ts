@@ -6,7 +6,9 @@ export default buildModule("IQCTokenWithAllocations", (m) => {
   const deployer = m.getAccount(0);
 
   // Deploy the token with 1 billion supply (all minted to the deployer at genesis)
-  const token = m.contract("IQCToken", [ONE_BILLION]);
+  // Second constructor arg = trusted forwarder for ERC-2771 meta-transactions.
+  // Pass address(0) to start with meta-tx disabled; owner can enable later via setTrustedForwarder().
+  const token = m.contract("IQCToken", [ONE_BILLION, "0x0000000000000000000000000000000000000000"]);
 
   // 1% of supply goes directly to the deployer wallet (immutableqc.base.eth) at genesis
   // This stays in the deployer's wallet and is not locked in an allocation contract.

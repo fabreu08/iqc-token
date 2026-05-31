@@ -15,7 +15,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
  */
 contract TokenAllocation is Ownable {
     IERC20 public immutable token;
-    string public constant ALLOCATION_PURPOSE;
+    string public ALLOCATION_PURPOSE;
 
     uint256 public totalAllocated;
     uint256 public totalReleased;

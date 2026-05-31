@@ -50,6 +50,10 @@ Always test before mainnet:
 npx hardhat ignition deploy ignition/modules/IQCTokenWithAllocations.ts --network baseSepolia
 ```
 
+The deployment now passes two constructor arguments:
+- `initialSupply` (1B)
+- `trustedForwarder` (use `0x000...000` to start with meta-tx disabled; you can call `setTrustedForwarder` later)
+
 Take note of the deployed addresses.
 
 ### 2. Deploy on Base Mainnet
@@ -80,6 +84,15 @@ npx hardhat run scripts/lockMinting.ts --network base
 Or call `lockMintingForever()` manually on Basescan using your `immutableqc.base.eth` wallet.
 
 Once this is called, the 1 billion supply is **permanently fixed**.
+
+### 5. (Optional) Enable Meta-Transactions Later
+
+If you later want gasless UX for instruments:
+
+1. Deploy or choose a trusted forwarder (e.g. OpenZeppelin MinimalForwarder).
+2. Call `setTrustedForwarder(forwarderAddress)` from `immutableqc.base.eth`.
+
+This can be done at any time after deployment.
 
 ---
 

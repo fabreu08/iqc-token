@@ -1,9 +1,23 @@
 require("@nomicfoundation/hardhat-toolbox");
 require("dotenv").config();
 
+/**
+ * IQC Token Hardhat config
+ * Supports: ERC20 + Permit + Votes + Burnable + 1363 + 2771 + Multicall + Ownable2Step
+ */
+
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
-  solidity: "0.8.24",
+  solidity: {
+    version: "0.8.24",
+    settings: {
+      optimizer: {
+        enabled: true,
+        runs: 200,
+      },
+      evmVersion: "cancun",
+    },
+  },
   networks: {
     hardhat: {},
     baseSepolia: {

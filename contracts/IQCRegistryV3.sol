@@ -81,7 +81,7 @@ contract IQCRegistryV3 is Ownable, IQCDataReceiver {
         address from,
         uint256 value,
         bytes calldata data
-    ) external override returns (bytes4) {
+    ) external returns (bytes4) {
         require(msg.sender == address(iqcToken), "Only IQC token");
         require(value >= COMMIT_FEE, "Insufficient fee sent with data");
 
@@ -97,14 +97,22 @@ contract IQCRegistryV3 is Ownable, IQCDataReceiver {
         return ON_TRANSFER_RECEIVED_SELECTOR;
     }
 
-    // Compatibility with older ERC677-style receivers
+    // Compatibility with the custom IQCDataReceiver interface
     function onIQCDataReceived(
         address operator,
         address from,
         uint256 value,
         bytes calldata data
     ) external returns (bytes4) {
-        return onTransferReceived(operator, from, value, data);
+        require(msg.sender == address(iqcToken), "Only IQC token");
+        require(value >= COMMIT_FEE, "Insufficient fee sent with data");
+
+        (string memory instrumentId, string memory dataHash) = abi.decode(data, (string, string));
+
+        iqcToken.transfer(DEAD_ADDRESS, COMMIT_FEE);
+        emit QCPacketCommitted(from, instrumentId, dataHash, COMMIT_FEE);
+
+        return ON_TRANSFER_RECEIVED_SELECTOR;
     }
 
     // ==================== Internal ====================

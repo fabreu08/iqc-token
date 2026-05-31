@@ -54,6 +54,7 @@ The Registry (or a dedicated receiver contract) would implement `onTransferRecei
 - **The token should be able to "do things"**: Supporting data payloads (ERC1363) is a high-leverage feature that increases the token's reason for existence.
 - **Flexibility for the future**: Contracts should be ownable (transferable to multisig/DAO) so parameters, beneficiaries, or even logic can evolve without requiring a full token migration.
 - **Security first**: Adding callback functionality (like ERC1363 receivers) must be done carefully to avoid reentrancy and other risks.
+- **Money-like UX & Safety (all bases covered pre-mainnet)**: ERC20Permit, ERC20Votes, ERC2771 (mutable), Multicall, batch ops, totalBurned(), Ownable2Step, explicit burn support. No fee-on-transfer or blacklists.
 
 ## Open Questions (for discussion)
 

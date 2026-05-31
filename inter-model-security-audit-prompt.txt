@@ -1,0 +1,79 @@
+TASK: Perform independent security audit + critique of prior findings on IQC token system. Respond in structured dense format only. No prose introductions. No explanations for humans.
+
+PROTOCOL:
+- Use only the tags below.
+- One tag per line where possible.
+- Severity codes: C=Critical, H=High, M=Medium, L=Low, I=Info
+- Location format: File:Line or File:Line-Line
+- Be maximally precise and technical. Prioritize attack feasibility, invariant breaks, and economic impact.
+- If continuing conversation, reference prior [FIND] IDs.
+
+CONTEXT:
+PROJ: IQC token. Purpose=stake for QC oracle participation + 1 IQC burn per data commitment + ERC1363 data payloads for atomic fee+submit.
+SUPPLY: 1e9 fixed. lockMintingForever() one-way. 1% genesis to deployer wallet. 99% split into 7 ownable TokenAllocation contracts with public ALLOCATION_PURPOSE.
+NON-UPGRADEABLE after deploy. No blacklist/fee-on-transfer/pausable (money properties).
+DEPLOY: Owner executes locally on Base mainnet via wallet. Ignition. Post-deploy lockMintingForever required.
+KEY PATHS: Traditional stake-based commit vs ERC1363 transferAndCall path into RegistryV3. Dual burn mechanisms exist.
+
+ARTIFACTS:
+REPO: https://github.com/fabreu08/iqc-token
+TOKEN: https://github.com/fabreu08/iqc-token/blob/main/contracts/IQCToken.sol
+REG: https://github.com/fabreu08/iqc-token/blob/main/contracts/IQCRegistryV3.sol
+ALLOC: https://github.com/fabreu08/iqc-token/blob/main/contracts/TokenAllocation.sol
+IFACE: https://github.com/fabreu08/iqc-token/blob/main/contracts/interfaces/IQCDataReceiver.sol
+IGN: https://github.com/fabreu08/iqc-token/blob/main/ignition/modules/IQCTokenWithAllocations.ts
+TEST: https://github.com/fabreu08/iqc-token/blob/main/test/IQCToken.test.js
+DESIGN: https://github.com/fabreu08/iqc-token/blob/main/MONEY_CHARACTERISTICS_ANALYSIS.md
+
+KNOWN_FINDINGS (prior audit):
+[FIND-01] C | REG:91-92,112 | totalBurned() only counts burn()/burnFrom(). All real burns (commit fees) use raw transfer(DEAD). | Invariant "verifiable deflation" broken. totalBurned() under-reports.
+[FIND-02] C | REG:79-116 | onTransferReceived/onIQCDataReceived: require(value>=1e18) then always burn exactly 1e18. Excess tokens trapped in Registry. No refund path. | User fund loss. Economic attack vector via over-send.
+[FIND-03] H | REG:46-47 | stake(): transferFrom then state update (CEI violation). | Reentrancy inflation of stakedBalance possible if token has hooks.
+[FIND-04] H | ALLOC:69 | recoverERC20 uses raw IERC20.transfer without return check or SafeERC20. | Silent failure on non-compliant tokens.
+[FIND-05] H | REG+ALLOC | No ReentrancyGuard on stake/unstake/slash/release/onTransferReceived. | Reentrancy surface on value movement.
+[FIND-06] M | TOKEN:128-150 | Manual ERC2771 impl (no OZ Context inheritance). Hardcoded 20-byte suffix. No delegatecall safeguards documented. | Meta-tx + Votes interaction risk.
+[FIND-07] M | TOKEN:156-177 | batchTransfer/batchTransferFrom unbounded arrays. | Gas griefing / DoS via large calldata.
+[FIND-08] M | REG | No recoverERC20 on Registry. Accidental sends (incl. IQC) only recoverable via owner slash. | Fund lockup.
+
+REQUIRED OUTPUT FORMAT (strict):
+Use these blocks only:
+
+[AGREE]
+LIST: 01,03,...   # which FINDs you fully agree with + severity confirmation
+
+[DISAGREE]
+ID|your_severity|reason|impact_diff
+
+[NEW]
+SEV|location|short_name|technical_description|exploit_scenario|invariant_broken|economic_impact
+
+[VEC]
+category|description|target|steps|prereqs|severity|likelihood
+
+[FIX]
+target_FIND_or_NEW|priority|diff_or_code|tradeoffs|gas_impact
+
+[ARCH]
+area|problem|alternative_design|pros|cons|rec_before_mainnet
+
+[TEST]
+gap|missing_case|attack_type
+
+[DEPLOY]
+risk|component|description|mitigation
+
+[SUMMARY]
+C_count|H_count|M_count|top3_risks|go_no_go|one_line_verdict
+
+END with only the above tags. No other text.
+
+ANALYZE:
+- ERC1363 callback + burn accounting interaction
+- Dual commit paths consistency
+- 2771 + Votes + _msgSender correctness
+- Allocation release + recover paths
+- Registry as ERC1363 receiver security
+- Supply finality after lock
+- Any OZ v5 inheritance gotchas in current setup
+
+Begin.
